@@ -1,17 +1,25 @@
-import * as actionTypes from "../actions";
+import * as actionTypes from "../actions/actionTypes";
+import { updateObject } from "../utility";
 
 const initialState = {
   results: [],
 };
 
+const deleteResult = (state, action) => {
+  // filter will return an new array
+  const updatedArray = state.results.filter(
+    (result) => result.id !== action.resultElId
+  );
+  return updateObject(state, { results: updatedArray });
+};
+
 const reducer = (state = initialState, action) => {
   // - Redux will only pass the piece of
   //   data (results) managed by this reducer
-  console.log("result reducer state", state);
+  // console.log("result reducer state", state);
   switch (action.type) {
     case actionTypes.STORE_RESULT:
-      return {
-        ...state,
+      return updateObject(state, {
         // - create a new array and add a new item
         //   so the array can be modified immutably
         // - when you split reducer into multiple reducers,
@@ -21,16 +29,9 @@ const reducer = (state = initialState, action) => {
         //   data in the payload to the reducer who needs the data.
         //   value: action.result
         results: state.results.concat({ id: new Date(), value: action.result }),
-      };
+      });
     case actionTypes.DELETE_RESULT:
-      // filter will return an new array
-      const updatedArray = state.results.filter(
-        (result) => result.id !== action.resultElId
-      );
-      return {
-        ...state,
-        results: updatedArray,
-      };
+      return deleteResult(state, action);
     default:
   }
   return state;
